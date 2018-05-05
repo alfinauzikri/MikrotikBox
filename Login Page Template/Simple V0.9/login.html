@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>SMAN 4 TEGAL</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="expires" content="-1" />
+<style type='text/css'>
+/* 
+Hello this my source code fb.me/alfinauzikri :)
+*/
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,700');
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900');
+.form{position:relative;z-index:1;background:#FFFFFF;max-width:300px;margin:0 auto 100px;padding:30px;border-top-left-radius:3px;border-top-right-radius:3px;border-bottom-left-radius:3px;border-bottom-right-radius:3px;text-align:center}
+.form .thumbnail{background:#FFF;width:200px;height:200px;margin:0 auto 30px;padding:40px 20px;border-top-left-radius:100%;border-top-right-radius:100%;border-bottom-left-radius:100%;border-bottom-right-radius:100%;box-sizing:border-box}
+.form .thumbnail img{display:block;width:100%}
+.form input{outline:0;background:#f2f2f2;width:100%;border:0;margin:0 0 15px;padding:15px;border-top-left-radius:3px;border-top-right-radius:3px;border-bottom-left-radius:3px;border-bottom-right-radius:3px;box-sizing:border-box;font-size:14px}
+.form button{outline:0;background:#EF3B3A;width:100%;border:0;padding:15px;border-top-left-radius:3px;border-top-right-radius:3px;border-bottom-left-radius:3px;border-bottom-right-radius:3px;color:#FFFFFF;font-size:14px;-webkit-transition:all 0.3 ease;transition:all 0.3 ease;cursor:pointer}
+.form .message{margin:15px 0 0;color:#b3b3b3;font-size:12px}
+.form .message a{color:#EF3B3A;text-decoration:none}
+.form .register-form{display:none}
+.container{position:relative;z-index:1;max-width:300px;margin:0 auto}
+.container:before,.container:after{content:"";display:block;clear:both}
+.container .info{margin:50px auto;text-align:center}
+.container .info h1{margin:0 0 15px;padding:0;font-size:36px;font-weight:300;color:#1a1a1a}
+.container .info span{color:#4d4d4d;font-size:12px}
+.container .info span a{color:#000000;text-decoration:none}
+.container .info span .fa{color:#EF3B3A}
+body{background:#ccc;font-family:"Roboto",sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body:before{content:"";position:fixed;top:0;left:0;display:block;background:rgba(255,255,255,0.8);width:100%;height:100%}
+</style>
+<script src='./jquery.min.js'></script>
+</head>
+<body>
+$(if chap-id)
+	<form name="sendin" action="$(link-login-only)" method="post">
+		<input type="hidden" name="username" />
+		<input type="hidden" name="password" />
+		<input type="hidden" name="dst" value="$(link-orig)" />
+		<input type="hidden" name="popup" value="true" />
+	</form>	
+	<script type="text/javascript" src="/md5.js"></script>
+	<script type="text/javascript">
+	<!--
+	    function doLogin() {
+		document.sendin.username.value = document.login.username.value;
+		document.sendin.password.value = hexMD5('$(chap-id)' + document.login.password.value + '$(chap-challenge)');
+		document.sendin.submit();
+		return false;
+	    }
+	//-->
+	</script>
+$(endif)
+
+<div class="container">
+  <div class="info">
+    <h1>Welcome!!</h1><span>SMAN 4 Tegal <a href="https://www.facebook.com/SMAN4KOTATEGAL/">Network</a></span>
+  </div>
+</div>
+<div class="form">
+  <div class="thumbnail"><img src="./img/logo.png"/></div>
+  <form class="register-form">
+  <div class="info">
+    <span><a>Hubungi kami!!<br><br><a href='https://www.facebook.com/SMAN4KOTATEGAL/'>Administrator</a> (Gunakan paket data) atau OSIS</span>
+  </div>
+  </form>
+  <form class="login-form" name="login" action="$(link-login-only)" method="post"
+					    $(if chap-id) onSubmit="return doLogin()" $(endif)>
+						<input type="hidden" name="dst" value="$(link-orig)" />
+						<input type="hidden" name="popup" value="true" />
+    <input class="textinput" type="text" value="$(username)" name="username" autofocus="autofocus" placeholder="ID/NIS" required>
+<input class="textinput" type="password" name="password" placeholder="Kata Sandi" required>
+    <button type="Submit">Masuk</button>
+    <p class="message">Belum terdaftar? <a href="#">Buat akun</a><br />$(if error)<br /><div style="color: #FF8080; font-size: 10px">$(error)</div>$(endif)</p>
+  </form>
+</div>
+<script type="text/javascript">
+<!--
+  document.login.username.focus();
+//-->
+$('.message a').click(function(){
+   $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
+});
+</script>
+</body>
+</html>

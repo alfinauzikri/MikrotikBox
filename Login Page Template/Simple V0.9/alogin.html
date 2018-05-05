@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>You are being redirected</title>
+<meta http-equiv="refresh" content="2; url=$(link-redirect)">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="-1">
+<style type='text/css'>
+/* 
+OSIS (EKA MANGGALA SMAPAT BHAKTI) 2016/2017
+Pembina			: Khaerul Zaman
+Ketua		 	: Muhammad Taufiqul Hakim
+Designer	 	: Alfin Auzikri (SEKBID 9)
+Type		 	: MikroTik Hotspot
+Style		 	: Minimalist
+Thanks to       : All supported
+License         : This free Blogger template is licensed under the Creative Commons Attribution 4.0 License, which permits both personal and commercial use.
+However, to satisfy the 'attribution' clause of the license, you are required to keep the footer links intact which provides due credit to its authors. For more specific details about the license, you may visit the URL below: //creativecommons.org/licenses/by/4.0/
+*/
+body {
+  background: #EF3B3A;
+}
+
+.loading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -60px 0 0 -60px;
+  background: #fff;
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  border: 10px solid #f56969;
+}
+.loading:after {
+  content: '';
+  background: trasparent;
+  width: 140%;
+  height: 140%;
+  position: absolute;
+  border-radius: 100%;
+  top: -20%;
+  left: -20%;
+  opacity: 0.7;
+  box-shadow: rgba(255, 255, 255, 0.6) -4px -5px 3px -3px;
+  animation: rotate 2s infinite linear;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+</style>
+</head>
+<body onLoad="startClock()">
+<div class="loading"/>
+</body>
+</html>
