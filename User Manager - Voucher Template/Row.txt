@@ -1,7 +1,7 @@
 <div id="main-wrap">     
 <div id="inner">
 <div id="price">      
-<div style="padding:5px 5px 5px 10px">%u_actualProfileName% | Rp. %u_moneyPaid%</div>
+<div style="padding:5px 5px 5px 10px">ACCOUNT INFO</div>
 </div>
 <div id="leftside">
  <div id="user-pass">
