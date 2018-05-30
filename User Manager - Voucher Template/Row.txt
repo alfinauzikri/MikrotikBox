@@ -1,0 +1,28 @@
+<div id="main-wrap">     
+<div id="inner">
+<div id="price">      
+<div style="padding:5px 5px 5px 10px">%u_actualProfileName% | Rp. %u_moneyPaid%</div>
+</div>
+<div id="leftside">
+ <div id="user-pass">
+             
+ User: [ %u_username% ]<br>
+ Pass: [ %u_password% ]<br>
+            </div>
+                <div class="qrcode" id="%u_username%"></div>
+                <script> jQuery(function(){jQuery('#%u_username%').qrcode(
+    {
+        "render": 'canvas',
+        "size": 100,
+        "minVersion": 5,
+        "maxVersion": 5,
+        "ecLevel": 'L',
+        "mode": 0,
+        "text": "http://10.5.50.1/login?username=%u_username%&password=%u_password%",
+        "quiet": 0,
+    }
+
+); }) </script>
+            </div>
+ </div>
+        </div>
