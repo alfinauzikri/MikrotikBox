@@ -54,7 +54,7 @@
   }
 
   #inner {
-  	background: url(https://github.com/alfinauzikri/MikrotikBox/raw/master/User%20Manager%20-%20Voucher%20Template/voucher.jpg) no-repeat;
+  	background: url(https://github.com/alfinauzikri/MikrotikBox/raw/master/User%20Manager%20-%20Voucher%20Template/voucher-template.jpg) no-repeat;
   	width: 325px;
   	height: 198px;
   	padding: 0px;
