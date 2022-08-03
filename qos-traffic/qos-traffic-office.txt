@@ -1,0 +1,115 @@
+## LANs = Private IP or Local IP
+## pppoe-gateway = WAN / Internet Interface
+## 300M = ISP Bandwidth (Upload/Download)
+
+## If you find any flaws in the script, or you want to improve the script, feel free to do a pull request or send me a message.
+
+# Catch Social Media IP
+/ip firewall raw
+add action=add-dst-to-address-list comment="Catch Facebook IP" address-list=Facebook address-list-timeout=5m chain=prerouting content=.facebook.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Facebook address-list-timeout=5m chain=prerouting content=.facebook.net dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Facebook address-list-timeout=5m chain=prerouting content=.fbcdn.net dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Facebook address-list-timeout=5m chain=prerouting content=.fbsbx.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Facebook address-list-timeout=5m chain=prerouting content=fb.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Facebook address-list-timeout=5m chain=prerouting content=fb.gg dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Facebook address-list-timeout=5m chain=prerouting content=fbwat.ch dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Facebook address-list-timeout=5m chain=prerouting content=messenger.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Facebook address-list-timeout=5m chain=prerouting content=m.me dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list comment="Catch Instagram IP" address-list=Instagram address-list-timeout=5m chain=prerouting content=.instagram.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Instagram address-list-timeout=5m chain=prerouting content=.cdninstagram.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list comment="Catch Twitter IP" address-list=Twitter address-list-timeout=5m chain=prerouting content=twitter.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Twitter address-list-timeout=5m chain=prerouting content=.twitter.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Twitter address-list-timeout=5m chain=prerouting content=.twimg.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Twitter address-list-timeout=5m chain=prerouting content=t.co dst-address-list=!LANs src-address-list=LANs
+
+# Catch Youtube IP
+/ip firewall raw
+add action=add-dst-to-address-list comment="Catch Youtube IP" address-list=Youtube address-list-timeout=5m chain=prerouting content=.googlevideo.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Youtube address-list-timeout=5m chain=prerouting content=.ytimg.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Youtube address-list-timeout=5m chain=prerouting content=.youtube.com dst-address-list=!LANs src-address-list=LANs
+
+# Catch Speedtest IP
+/ip firewall raw
+add action=add-dst-to-address-list address-list=Speedtest comment="Catch Speedtest IP" address-list-timeout=5m chain=prerouting content=speedtest.net dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=speedest. dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=speedtest- dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=.speedtest. dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=ooklaserver.net dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=nflxvideo.net dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=speedtestcustom.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=speedtestcustom. dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=speedtest.cbn.id dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=fast.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=speedcheck.org dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=speedof.me dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Speedtest address-list-timeout=5m chain=prerouting content=openspeedtest.com dst-address-list=!LANs src-address-list=LANs
+
+# BYPASS LOCAL TRAFFIC 
+/ip firewall mangle
+add action=accept chain=prerouting comment="Bypass Local Traffic" dst-address-list=LANs src-address-list=LANs
+add action=accept chain=forward dst-address-list=LANs src-address-list=LANs
+
+# Mark ICMP Traffic
+/ip firewall mangle
+add action=mark-connection chain=forward comment="ICMP Traffic" new-connection-mark=icmp passthrough=yes protocol=icmp src-address-list=LANs
+add action=mark-packet chain=forward connection-mark=icmp in-interface="pppoe-gateway" new-packet-mark=icmp_down passthrough=no protocol=icmp
+add action=mark-packet chain=forward connection-mark=icmp out-interface="pppoe-gateway" new-packet-mark=icmp_up passthrough=no protocol=icmp
+
+# Mark DNS Traffic
+/ip firewall mangle
+add action=mark-connection chain=forward comment="DNS Traffic" dst-port=53 new-connection-mark=dns passthrough=yes protocol=udp src-address-list=LANs
+add action=mark-packet chain=forward connection-mark=dns in-interface="pppoe-gateway" new-packet-mark=dns_down passthrough=no protocol=udp
+add action=mark-packet chain=forward connection-mark=dns out-interface="pppoe-gateway" new-packet-mark=dns_up passthrough=no protocol=udp
+
+# Mark Remote Traffic
+/ip firewall mangle
+add action=mark-connection chain=forward comment="Remote Traffic" dst-port=22,23,8291 new-connection-mark=remote passthrough=yes protocol=tcp src-address-list=LANs
+add action=mark-packet chain=forward connection-mark=remote in-interface="pppoe-gateway" new-packet-mark=remote_down passthrough=no
+add action=mark-packet chain=forward connection-mark=remote out-interface="pppoe-gateway" new-packet-mark=remote_up passthrough=no
+
+# Mark Social Media Traffic
+/ip firewall mangle
+add action=mark-connection chain=forward comment="Social Media Traffic" new-connection-mark=medsos passthrough=yes dst-address-list=Facebook src-address-list=LANs
+add action=mark-connection chain=forward new-connection-mark=medsos passthrough=yes dst-address-list=Instagram src-address-list=LANs
+add action=mark-connection chain=forward new-connection-mark=medsos passthrough=yes dst-address-list=Twitter src-address-list=LANs
+add action=mark-packet chain=forward connection-mark=medsos in-interface="pppoe-gateway" new-packet-mark=medsos_down passthrough=no
+add action=mark-packet chain=forward connection-mark=medsos out-interface="pppoe-gateway" new-packet-mark=medsos_up passthrough=no
+
+# Mark Browsing Traffic
+/ip firewall mangle
+add action=mark-connection chain=forward comment="Browsing Traffic" connection-mark=!heavy_traffic new-connection-mark=browsing passthrough=yes src-address-list=LANs
+
+# Mark Streaming Traffic
+/ip firewall mangle
+add action=mark-connection chain=forward comment="Streaming Traffic" new-connection-mark=streaming passthrough=yes dst-address-list=Youtube src-address-list=LANs
+add action=mark-packet chain=forward connection-mark=streaming in-interface="pppoe-gateway" new-packet-mark=streaming_down passthrough=no
+add action=mark-packet chain=forward connection-mark=streaming out-interface="pppoe-gateway" new-packet-mark=streaming_up passthrough=no
+
+# Mark Heavy Traffic
+/ip firewall mangle
+add action=mark-connection chain=forward comment="Heavy Traffic" connection-bytes=1024000-0 connection-mark=browsing connection-rate=256k-102400k new-connection-mark=heavy_traffic passthrough=yes protocol=tcp
+add action=mark-connection chain=forward connection-bytes=1024000-0 connection-mark=browsing connection-rate=256k-102400k new-connection-mark=heavy_traffic passthrough=yes protocol=udp
+add action=mark-packet chain=forward connection-mark=heavy_traffic in-interface="pppoe-gateway" new-packet-mark=heavy_browsing_down passthrough=no
+add action=mark-packet chain=forward connection-mark=heavy_traffic out-interface="pppoe-gateway" new-packet-mark=heavy_browsing_up passthrough=no
+add action=mark-packet chain=forward connection-mark=browsing in-interface="pppoe-gateway" new-packet-mark=small_browsing_down passthrough=no
+add action=mark-packet chain=forward connection-mark=browsing out-interface="pppoe-gateway" new-packet-mark=small_browsing_up passthrough=no
+
+
+# QUEUE TRAFFIC (SET TRAFFIC PRIORITY & LIMIT)
+/queue tree
+add max-limit=300M name=Download parent=global queue=default
+add max-limit=300M name=Upload parent=global queue=default
+add name="1. ICMP" packet-mark=icmp_down parent=Download priority=1 queue=pcq-download-default
+add name="2. DNS" packet-mark=dns_down parent=Download priority=1 queue=pcq-download-default
+add name="3. Remote" packet-mark=remote_down parent=Download priority=2 queue=pcq-download-default
+add name="4. Social Media" packet-mark=medsos_down parent=Download priority=3 queue=pcq-download-default
+add name="5. Browsing" packet-mark=small_browsing_down parent=Download priority=4 queue=pcq-download-default
+add name="6. Streaming" packet-mark=streaming_down parent=Download priority=7 queue=pcq-download-default
+add name="7. Heavy Browsing" packet-mark=heavy_browsing_down parent=Download priority=8 queue=pcq-download-default
+add name="1. ICMP " packet-mark=icmp_up parent=Upload priority=1 queue=pcq-upload-default
+add name="2. DNS " packet-mark=dns_up parent=Upload priority=1 queue=pcq-upload-default
+add name="3. Remote " packet-mark=remote_up parent=Upload priority=2 queue=pcq-upload-default
+add name="4. Social Media " packet-mark=medsos_up parent=Upload priority=3 queue=pcq-upload-default
+add name="5. Browsing " packet-mark=small_browsing_up parent=Upload priority=4 queue=pcq-upload-default
+add name="6. Streaming " packet-mark=streaming_up parent=Upload priority=7 queue=pcq-upload-default
+add name="7. Heavy Browsing " packet-mark=heavy_browsing_up parent=Upload priority=8 queue=pcq-upload-default
