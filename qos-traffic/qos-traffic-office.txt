@@ -21,6 +21,14 @@ add action=add-dst-to-address-list comment="Catch Twitter IP" address-list=Twitt
 add action=add-dst-to-address-list address-list=Twitter address-list-timeout=5m chain=prerouting content=.twitter.com dst-address-list=!LANs src-address-list=LANs
 add action=add-dst-to-address-list address-list=Twitter address-list-timeout=5m chain=prerouting content=.twimg.com dst-address-list=!LANs src-address-list=LANs
 add action=add-dst-to-address-list address-list=Twitter address-list-timeout=5m chain=prerouting content=t.co dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list comment="Catch Whatsapp IP" address-list=Whatsapp address-list-timeout=5m chain=prerouting content=.whatsapp.net dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Whatsapp address-list-timeout=5m chain=prerouting content=.whatsapp.com dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list comment="Catch Telegram IP" address-list=Telegram address-list-timeout=5m chain=prerouting content=telegram.org dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Telegram address-list-timeout=5m chain=prerouting content=api.telegram.org dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Telegram address-list-timeout=5m chain=prerouting content=core.telegram.org dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Telegram address-list-timeout=5m chain=prerouting content=web.telegram.org dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Telegram address-list-timeout=5m chain=prerouting content=t.me dst-address-list=!LANs src-address-list=LANs
+add action=add-dst-to-address-list address-list=Telegram address-list-timeout=5m chain=prerouting content=telesco.pe dst-address-list=!LANs src-address-list=LANs
 
 # Catch Youtube IP
 /ip firewall raw
