@@ -1,0 +1,123 @@
+# Manage Hotspot Public Bandwidth
+/ip firewall mangle
+add chain=forward action=mark-connection new-connection-mark=hotspot-public-to-internet passthrough=yes \
+src-address=10.5.48.0/21 dst-address-list=!LANs in-interface=bridge-hotspot-public \
+out-interface=pppoe-gateway comment="Mark connection from Hotspot Public to Internet (Upload)"
+
+/ip firewall mangle
+add chain=forward action=mark-connection new-connection-mark=hotspot-public-from-internet passthrough=yes \
+dst-address=10.5.48.0/21 src-address-list=!LANs in-interface=pppoe-gateway \
+out-interface=bridge-hotspot-public comment="Mark connection from Internet to Hotspot Public (Download)"
+
+/ip firewall mangle
+add chain=forward action=mark-packet new-packet-mark=hotspot-public-packet-to-internet passthrough=yes \
+connection-mark=hotspot-public-to-internet in-interface=bridge-hotspot-public \
+out-interface=pppoe-gateway comment="Mark packets from Hotspot Public to Internet (Upload)"
+
+/ip firewall mangle
+add chain=forward action=mark-packet new-packet-mark=hotspot-public-packet-from-internet passthrough=yes \
+connection-mark=hotspot-public-from-internet in-interface=pppoe-gateway \
+out-interface=bridge-hotspot-public comment="Mark packets from Internet to Hotspot Public (Download)"
+
+/queue tree
+add name="hotspot-public-upload-qt" parent=global packet-mark=hotspot-public-packet-to-internet \
+limit-at=0 queue=pcq-upload-default priority=8 max-limit=300M burst-limit=350M \
+burst-threshold=0 burst-time=10s bucket-size=0.1
+
+/queue tree
+add name="hotspot-public-download-qt" parent=global packet-mark=hotspot-public-packet-from-internet \
+limit-at=0 queue=pcq-download-default priority=8 max-limit=300M burst-limit=350M \
+burst-threshold=0 burst-time=10s bucket-size=0.1
+
+# Manage Hotspot Internal Bandwidth
+/ip firewall mangle
+add chain=forward action=mark-connection new-connection-mark=hotspot-internal-to-internet passthrough=yes \
+src-address=192.168.50.0/24 dst-address-list=!LANs in-interface=bridge-hotspot-internal \
+out-interface=pppoe-gateway comment="Mark connection from Hotspot Internal to Internet (Upload)"
+
+/ip firewall mangle
+add chain=forward action=mark-connection new-connection-mark=hotspot-internal-from-internet passthrough=yes \
+dst-address=192.168.50.0/24 src-address-list=!LANs in-interface=pppoe-gateway \
+out-interface=bridge-hotspot-internal comment="Mark connection from Internet to Hotspot Internal (Download)"
+
+/ip firewall mangle
+add chain=forward action=mark-packet new-packet-mark=hotspot-internal-packet-to-internet passthrough=yes \
+connection-mark=hotspot-internal-to-internet in-interface=bridge-hotspot-internal \
+out-interface=pppoe-gateway comment="Mark packets from Hotspot Internal to Internet (Upload)"
+
+/ip firewall mangle
+add chain=forward action=mark-packet new-packet-mark=hotspot-internal-packet-from-internet passthrough=yes \
+connection-mark=hotspot-internal-from-internet in-interface=pppoe-gateway \
+out-interface=bridge-hotspot-internal comment="Mark packets from Internet to Hotspot Internal (Download)"
+
+/queue tree
+add name="hotspot-internal-upload-qt" parent=global packet-mark=hotspot-internal-packet-to-internet \
+limit-at=0 queue=pcq-upload-default priority=8 max-limit=300M burst-limit=400M \
+burst-threshold=0 burst-time=10s bucket-size=0.1
+
+/queue tree
+add name="hotspot-internal-download-qt" parent=global packet-mark=hotspot-internal-packet-from-internet \
+limit-at=0 queue=pcq-download-default priority=8 max-limit=300M burst-limit=400M \
+burst-threshold=0 burst-time=10s bucket-size=0.1
+
+# Manage Tatausaha Bandwidth
+/ip firewall mangle
+add chain=forward action=mark-connection new-connection-mark=tatausaha-to-internet passthrough=yes \
+src-address=192.168.70.0/24 dst-address-list=!LANs in-interface=bridge-tatausaha \
+out-interface=pppoe-gateway comment="Mark connection from Tatausaha to Internet (Upload)"
+
+/ip firewall mangle
+add chain=forward action=mark-connection new-connection-mark=tatausaha-from-internet passthrough=yes \
+dst-address=192.168.70.0/24 src-address-list=!LANs in-interface=pppoe-gateway \
+out-interface=bridge-tatausaha comment="Mark connection from Internet to Tatausaha (Download)"
+
+/ip firewall mangle
+add chain=forward action=mark-packet new-packet-mark=tatausaha-packet-to-internet passthrough=yes \
+connection-mark=tatausaha-to-internet in-interface=bridge-tatausaha \
+out-interface=pppoe-gateway comment="Mark packets from Tatausaha to Internet (Upload)"
+
+/ip firewall mangle
+add chain=forward action=mark-packet new-packet-mark=tatausaha-packet-from-internet passthrough=yes \
+connection-mark=tatausaha-from-internet in-interface=pppoe-gateway \
+out-interface=bridge-tatausaha comment="Mark packets from Internet to Tatausaha (Download)"
+
+/queue tree
+add name="tatausaha-upload-qt" parent=global packet-mark=tatausaha-packet-to-internet \
+limit-at=0 queue=pcq-upload-default priority=8 max-limit=300M burst-limit=400M \
+burst-threshold=0 burst-time=10s bucket-size=0.1
+
+/queue tree
+add name="tatausaha-download-qt" parent=global packet-mark=tatausaha-packet-from-internet \
+limit-at=0 queue=pcq-download-default priority=8 max-limit=300M burst-limit=400M \
+burst-threshold=0 burst-time=10s bucket-size=0.1
+
+# Manage Server Bandwidth
+/ip firewall mangle
+add chain=forward action=mark-connection new-connection-mark=server-to-internet passthrough=yes \
+src-address=192.168.111.0/24 dst-address-list=!LANs in-interface=bridge-server \
+out-interface=pppoe-gateway comment="Mark connection from Server to Internet (Upload)"
+
+/ip firewall mangle
+add chain=forward action=mark-connection new-connection-mark=server-from-internet passthrough=yes \
+dst-address=192.168.111.0/24 src-address-list=!LANs in-interface=pppoe-gateway \
+out-interface=bridge-server comment="Mark connection from Internet to Server (Download)"
+
+/ip firewall mangle
+add chain=forward action=mark-packet new-packet-mark=server-packet-to-internet passthrough=yes \
+connection-mark=server-to-internet in-interface=bridge-server \
+out-interface=pppoe-gateway comment="Mark packets from Server to Internet (Upload)"
+
+/ip firewall mangle
+add chain=forward action=mark-packet new-packet-mark=server-packet-from-internet passthrough=yes \
+connection-mark=server-from-internet in-interface=pppoe-gateway \
+out-interface=bridge-server comment="Mark packets from Internet to Server (Download)"
+
+/queue tree
+add name="server-upload-qt" parent=global packet-mark=server-packet-to-internet \
+limit-at=0 queue=pcq-upload-default priority=8 max-limit=300M burst-limit=400M \
+burst-threshold=0 burst-time=10s bucket-size=0.1
+
+/queue tree
+add name="server-download-qt" parent=global packet-mark=server-packet-from-internet \
+limit-at=0 queue=pcq-download-default priority=8 max-limit=300M burst-limit=400M \
+burst-threshold=0 burst-time=10s bucket-size=0.1
