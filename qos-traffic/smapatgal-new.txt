@@ -6,6 +6,8 @@
 # Case Study: SMA Negeri 4 Tegal
 # Author: Alfin Auzikri (alfinauzikri)
 # Date: 2025-09-07
+# Internet Connection: Biznet Metronet 4D (450 Mbps)
+# ISP: Biznet Networks
 # Network Segments: 
 # - Management: 10.99.99.0/24
 # - Server: 192.168.111.0/24
@@ -164,6 +166,36 @@ add chain=forward connection-mark=lib-conn action=mark-packet new-packet-mark=li
 add chain=forward connection-mark=labkom-conn action=mark-packet new-packet-mark=labkom-packet passthrough=no comment="PACKET Labkom (1-4)"
 add chain=forward connection-mark=ihs-conn action=mark-packet new-packet-mark=internal-hotspot-packet passthrough=no comment="PACKET Internal Hotspot"
 add chain=forward connection-mark=phs-conn action=mark-packet new-packet-mark=public-hotspot-packet passthrough=no comment="PACKET Public Hotspot"
+
+# Queue Tree Rules
+# Download
+/queue tree
+add name=dns-down parent=global packet-mark=dns-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="DNS prio-1 (download)"
+add name=icmp-down parent=global packet-mark=icmp-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="ICMP prio-1 (download)"
+add name=server-down parent=global packet-mark=server-packet priority=2 limit-at=60M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Server, DNS & Mikrotik CT prio-2 (download)"
+add name=mgmt-down parent=global packet-mark=mgmt-packet priority=2 limit-at=5M  max-limit=50M burst-limit=50M  burst-threshold=25M  burst-time=10s comment="Management prio-2 (limited 50M, download)"
+add name=iot-down parent=global packet-mark=iot-packet priority=3 limit-at=40M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="IoT/CCTV prio-3 (download)"
+add name=operator-down parent=global packet-mark=operator-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Operator prio-4 (download)"
+add name=tu-down parent=global packet-mark=tu-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Tata Usaha prio-4 (download)"
+add name=labkom-down parent=global packet-mark=labkom-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Labkom prio-5 (download)"
+add name=lib-down parent=global packet-mark=lib-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Perpustakaan prio-5 (download)"
+add name=ihs-down parent=global packet-mark=internal-hotspot-packet priority=7 limit-at=5M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Internal Hotspot prio-7 (download)"
+add name=phs-down parent=global packet-mark=public-hotspot-packet priority=8 limit-at=1M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Public Hotspot prio-8 (download)"
+
+# Upload
+/queue tree
+add name=dns-up parent=global packet-mark=dns-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="DNS prio-1 (upload)"
+add name=icmp-up parent=global packet-mark=icmp-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="ICMP prio-1 (upload)"
+add name=server-up parent=global packet-mark=server-packet priority=2 limit-at=60M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Server, DNS & Mikrotik CT prio-2 (upload)"
+add name=mgmt-up parent=global packet-mark=mgmt-packet priority=2 limit-at=5M  max-limit=50M burst-limit=50M  burst-threshold=25M  burst-time=10s comment="Management prio-2 (limited 50M, upload)"
+add name=iot-up parent=global packet-mark=iot-packet priority=3 limit-at=40M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="IoT/CCTV prio-3 (upload)"
+add name=operator-up parent=global packet-mark=operator-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Operator prio-4 (upload)"
+add name=tu-up parent=global packet-mark=tu-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Tata Usaha prio-4 (upload)"
+add name=labkom-up parent=global packet-mark=labkom-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Labkom prio-5 (upload)"
+add name=lib-up parent=global packet-mark=lib-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Perpustakaan prio-5 (upload)"
+add name=ihs-up parent=global packet-mark=internal-hotspot-packet priority=7 limit-at=5M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Internal Hotspot prio-7 (upload)"
+add name=phs-up parent=global packet-mark=public-hotspot-packet priority=8 limit-at=1M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Public Hotspot prio-8 (upload)"
+
 
 # Address Lists Rules
 # List of Hairpin NAT destinations
