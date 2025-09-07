@@ -1,0 +1,276 @@
+# Script to configure MikroTik RouterOS Firewall, NAT, and Mangle rules
+# for a network with multiple VLANs and segments.
+# This script assumes the existence of interface lists named "LAN" and "WAN".
+# Adjust IP addresses, interface names, and other parameters as needed.
+
+# Case Study: SMA Negeri 4 Tegal
+# Author: Alfin Auzikri (alfinauzikri)
+# Date: 2025-09-07
+# Network Segments: 
+# - Management: 10.99.99.0/24
+# - Server: 192.168.111.0/24
+# - DNS & Mikrotik CT Infra: 10.1.2.0/24
+# - IoT/CCTV: 172.16.10.0/24
+# - Operator: 192.168.50.0/24
+# - Tata Usaha: 192.168.60.0/24
+# - Perpustakaan: 192.168.70.0/24
+# - Labkom1: 192.168.10.0/24
+# - Labkom2: 192.168.20.0/24
+# - Labkom3: 192.168.30.0/24
+# - Labkom4: 192.168.40.0/24
+# - Internal Hotspot: 172.16.8.0/23
+# - Public Hotspot: 172.16.0.0/21
+
+# Interface Lists
+# Create interface lists if they do not exist
+/interface list
+:if ([/interface list find name="LAN"] = "") do={ /interface list add name=LAN }
+:if ([/interface list find name="WAN"] = "") do={ /interface list add name=WAN }
+
+# WAN interface list (adjust interface names as needed)
+/interface list member
+add list=WAN interface=pppoe-gateway
+
+# LAN interface list
+/interface list member
+add list=LAN interface=bridge-management
+add list=LAN interface=bridge-server
+add list=LAN interface=bridge-iot
+add list=LAN interface=bridge-operator
+add list=LAN interface=bridge-labkom1
+add list=LAN interface=bridge-labkom2
+add list=LAN interface=bridge-labkom3
+add list=LAN interface=bridge-labkom4
+add list=LAN interface=bridge-tatausaha
+add list=LAN interface=bridge-perpustakaan
+add list=LAN interface=bridge-internal
+add list=LAN interface=bridge-public
+add list=LAN interface=bridge-container
+
+# Mangle Rules
+# Bypass LAN to LAN traffic
+/ip firewall mangle
+add chain=forward in-interface-list=LAN out-interface-list=LAN action=mark-connection new-connection-mark=lan-lan passthrough=yes comment="Bypass LAN<->LAN"
+add chain=forward connection-mark=lan-lan action=accept comment="Accept LAN<->LAN"
+
+# DNS Upload (LAN -> WAN)
+/ip firewall mangle
+add chain=forward in-interface-list=LAN out-interface-list=WAN protocol=udp dst-port=53 action=mark-packet new-packet-mark=dns-packet passthrough=yes comment="DNS up UDP"
+add chain=forward in-interface-list=LAN out-interface-list=WAN protocol=tcp dst-port=53 action=mark-packet new-packet-mark=dns-packet passthrough=yes comment="DNS up TCP"
+
+# DNS Download (WAN -> LAN)
+/ip firewall mangle
+add chain=forward in-interface-list=WAN out-interface-list=LAN protocol=udp src-port=53 action=mark-packet new-packet-mark=dns-packet passthrough=yes comment="DNS down UDP"
+add chain=forward in-interface-list=WAN out-interface-list=LAN protocol=tcp src-port=53 action=mark-packet new-packet-mark=dns-packet passthrough=yes comment="DNS down TCP"
+
+# ICMP Upload & Download (both directions)
+/ip firewall mangle
+add chain=forward in-interface-list=LAN out-interface-list=WAN protocol=icmp action=mark-packet new-packet-mark=icmp-packet passthrough=yes comment="ICMP up"
+add chain=forward in-interface-list=WAN out-interface-list=LAN protocol=icmp action=mark-packet new-packet-mark=icmp-packet passthrough=yes comment="ICMP down"
+
+
+# UPLOAD (LAN -> WAN), Connection Marking each source segment
+/ip firewall mangle
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=10.99.99.0/24 \
+    action=mark-connection new-connection-mark=mgmt-conn passthrough=yes \
+    comment="UPLOAD Mgmt (10.99.99.0/24) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.111.0/24 \
+    action=mark-connection new-connection-mark=server-conn passthrough=yes \
+    comment="UPLOAD Server (192.168.111.0/24) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=10.1.2.0/24 \
+    action=mark-connection new-connection-mark=server-conn passthrough=yes \
+    comment="UPLOAD DNS & Mikrotik CT Infra (10.1.2.0/24) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=172.16.10.0/24 \
+    action=mark-connection new-connection-mark=iot-conn passthrough=yes \
+    comment="UPLOAD IoT/CCTV (172.16.10.0/24) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.50.0/24 \
+    action=mark-connection new-connection-mark=operator-conn passthrough=yes \
+    comment="UPLOAD Operator (192.168.50.0/24) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.60.0/24 \
+    action=mark-connection new-connection-mark=tu-conn passthrough=yes \
+    comment="UPLOAD Tata Usaha (192.168.60.0/24) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.70.0/24 \
+    action=mark-connection new-connection-mark=lib-conn passthrough=yes \
+    comment="UPLOAD Perpustakaan (192.168.70.0/24) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.10.0/24 \
+    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    comment="UPLOAD Labkom1 (192.168.10.0/24) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.20.0/24 \
+    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    comment="UPLOAD Labkom2 (192.168.20.0/24) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.30.0/24 \
+    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    comment="UPLOAD Labkom3 (192.168.30.0/24) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.40.0/24 \
+    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    comment="UPLOAD Labkom4 (192.168.40.0/24) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=172.16.8.0/23 \
+    action=mark-connection new-connection-mark=ihs-conn passthrough=yes \
+    comment="UPLOAD Internal Hotspot (172.16.8.0/23) -> Internet"
+add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=172.16.0.0/21 \
+    action=mark-connection new-connection-mark=phs-conn passthrough=yes \
+    comment="UPLOAD Public Hotspot (172.16.0.0/21) -> Internet"
+
+# DOWNLOAD (WAN -> LAN), Connection Marking each destination segment
+/ip firewall mangle
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=10.99.99.0/24 \
+    action=mark-connection new-connection-mark=mgmt-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> Mgmt (10.99.99.0/24)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.111.0/24 \
+    action=mark-connection new-connection-mark=server-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> Server (192.168.111.0/24)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=10.1.2.0/24 \
+    action=mark-connection new-connection-mark=server-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> DNS & Mikrotik Container Infra (10.1.2.0/24)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=172.16.10.0/24 \
+    action=mark-connection new-connection-mark=iot-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> IoT/CCTV (172.16.10.0/24)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.50.0/24 \
+    action=mark-connection new-connection-mark=operator-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> Operator (192.168.50.0/24)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.60.0/24 \
+    action=mark-connection new-connection-mark=tu-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> Tata Usaha (192.168.60.0/24)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.70.0/24 \
+    action=mark-connection new-connection-mark=lib-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> Perpustakaan (192.168.70.0/24)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.10.0/24 \
+    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> Labkom1 (192.168.10.0/24)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.20.0/24 \
+    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> Labkom2 (192.168.20.0/24)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.30.0/24 \
+    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> Labkom3 (192.168.30.0/24)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.40.0/24 \
+    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> Labkom4 (192.168.40.0/24)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=172.16.8.0/23 \
+    action=mark-connection new-connection-mark=ihs-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> Internal Hotspot (172.16.8.0/23)"
+add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=172.16.0.0/21 \
+    action=mark-connection new-connection-mark=phs-conn passthrough=yes \
+    comment="DOWNLOAD Internet -> Public Hotspot (172.16.0.0/21)"
+
+# Packet Marking from Connection Mark for Queue Tree
+/ip firewall mangle
+add chain=forward connection-mark=server-conn action=mark-packet new-packet-mark=server-packet passthrough=no comment="PACKET Server (Inc. DNS & Mikrotik CT Infra)"
+add chain=forward connection-mark=mgmt-conn action=mark-packet new-packet-mark=mgmt-packet passthrough=no comment="PACKET Management"
+add chain=forward connection-mark=iot-conn action=mark-packet new-packet-mark=iot-packet passthrough=no comment="PACKET IoT/CCTV"
+add chain=forward connection-mark=operator-conn action=mark-packet new-packet-mark=operator-packet passthrough=no comment="PACKET Operator"
+add chain=forward connection-mark=tu-conn action=mark-packet new-packet-mark=tu-packet passthrough=no comment="PACKET Tata Usaha"
+add chain=forward connection-mark=lib-conn action=mark-packet new-packet-mark=lib-packet passthrough=no comment="PACKET Perpustakaan"
+add chain=forward connection-mark=labkom-conn action=mark-packet new-packet-mark=labkom-packet passthrough=no comment="PACKET Labkom (1-4)"
+add chain=forward connection-mark=ihs-conn action=mark-packet new-packet-mark=internal-hotspot-packet passthrough=no comment="PACKET Internal Hotspot"
+add chain=forward connection-mark=phs-conn action=mark-packet new-packet-mark=public-hotspot-packet passthrough=no comment="PACKET Public Hotspot"
+
+# Address Lists Rules
+# List of Hairpin NAT destinations
+/ip firewall address-list
+add list=hairpin-dst address=192.168.111.180 comment="Proxy Server"
+add list=hairpin-dst address=192.168.111.111 comment="PV 1"
+add list=hairpin-dst address=192.168.111.222 comment="PV 2"
+add list=hairpin-dst address=192.168.111.3 comment="Dapodik Server"
+add list=hairpin-dst address=192.168.111.3 comment="Dapodik Server"
+add list=hairpin-dst address=10.99.99.2 comment="South Switch"
+
+# NAT Rules
+# Masquerade for outbound traffic on WAN interfaces
+/ip firewall nat add chain=srcnat out-interface-list=WAN action=masquerade comment="Masquerade WAN"
+
+# Hairpin NAT Source NAT for LAN to LAN traffic to hairpin destinations
+/ip firewall nat add chain=srcnat in-interface-list=LAN out-interface-list=LAN \
+    dst-address-list=hairpin-dst action=masquerade \
+    comment="Hairpin SNAT (LAN->LAN only to hairpin backends)"
+
+# Port Forward Rules
+/ip firewall nat add chain=dstnat in-interface-list=WAN protocol=tcp dst-port=3333 \
+    action=dst-nat to-addresses=192.168.111.3 to-ports=3389 \
+    comment="Port Forward :: RDP - TCP 3333 -> 192.168.111.3:3389"
+/ip firewall nat add chain=dstnat in-interface-list=WAN protocol=tcp dst-port=5437 \
+    action=dst-nat to-addresses=192.168.111.3 to-ports=5437 \
+    comment="Port Forward :: DAPODIK - TCP 5437 -> 192.168.111.3:5437"
+/ip firewall nat add chain=dstnat in-interface-list=WAN protocol=tcp dst-port=5774 \
+    action=dst-nat to-addresses=192.168.111.3 to-ports=5774 \
+    comment="Port Forward :: DAPODIK - TCP 5774 -> 192.168.111.3:5774"
+/ip firewall nat add chain=dstnat in-interface-list=WAN protocol=tcp dst-port=80 \
+    action=dst-nat to-addresses=192.168.111.180 to-ports=80 \
+    comment="Port Forward :: Web Server - TCP 80 -> 192.168.111.180:80"
+/ip firewall nat add chain=dstnat in-interface-list=WAN protocol=tcp dst-port=443 \
+    action=dst-nat to-addresses=192.168.111.180 to-ports=443 \
+    comment="Port Forward :: Web Server - TCP 443 -> 192.168.111.180:443"
+/ip firewall nat add chain=dstnat in-interface-list=WAN protocol=udp dst-port=443 \
+    action=dst-nat to-addresses=192.168.111.180 to-ports=443 \
+    comment="Port Forward :: Web Server - UDP 443 (QUIC) -> 192.168.111.180:443"
+/ip firewall nat add chain=dstnat in-interface-list=WAN protocol=tcp dst-port=81 \
+    action=dst-nat to-addresses=192.168.111.111 to-ports=22 \
+    comment="Port Forward :: SSH PV1 - TCP 81 -> 192.168.111.111:22"
+/ip firewall nat add chain=dstnat in-interface-list=WAN protocol=tcp dst-port=82 \
+    action=dst-nat to-addresses=192.168.111.222 to-ports=22 \
+    comment="Port Forward :: SSH PV2 - TCP 82 -> 192.168.111.222:22"
+/ip firewall nat add chain=dstnat in-interface-list=WAN protocol=tcp dst-port=8887 \
+    action=dst-nat to-addresses=10.99.99.2 to-ports=8888 \
+    comment="Port Forward :: South Switch - TCP 8887 -> 10.99.99.2:8888"
+
+# Hairpin NAT Rules
+/ip firewall nat add chain=dstnat in-interface-list=LAN dst-address-type=local protocol=tcp dst-port=3333 \
+    action=dst-nat to-addresses=192.168.111.3 to-ports=3389 \
+    comment="Hairpin :: RDP - LAN 3333 -> 192.168.111.3:3389"
+/ip firewall nat add chain=dstnat in-interface-list=LAN dst-address-type=local protocol=tcp dst-port=5437 \
+    action=dst-nat to-addresses=192.168.111.3 to-ports=5437 \
+    comment="Hairpin :: DAPODIK - LAN 5437 -> 192.168.111.3:5437"
+ip firewall nat add chain=dstnat in-interface-list=LAN dst-address-type=local protocol=tcp dst-port=5774 \
+    action=dst-nat to-addresses=192.168.111.3 to-ports=5774 \
+    comment="Hairpin :: DAPODIK - LAN 5774 -> 192.168.111.3:5774"
+/ip firewall nat add chain=dstnat in-interface-list=LAN dst-address-type=local protocol=tcp dst-port=80 \
+    action=dst-nat to-addresses=192.168.111.180 to-ports=80 \
+    comment="Hairpin :: Web HTTP - LAN 80 -> 192.168.111.180:80"
+ip firewall nat add chain=dstnat in-interface-list=LAN dst-address-type=local protocol=tcp dst-port=443 \
+    action=dst-nat to-addresses=192.168.111.180 to-ports=443 \
+    comment="Hairpin :: Web HTTPS TCP - LAN 443 -> 192.168.111.180:443"
+ip firewall nat add chain=dstnat in-interface-list=LAN dst-address-type=local protocol=udp dst-port=443 \
+    action=dst-nat to-addresses=192.168.111.180 to-ports=443 \
+    comment="Hairpin :: Web HTTPS UDP (QUIC) - LAN 443 -> 192.168.111.180:443"
+/ip firewall nat add chain=dstnat in-interface-list=LAN dst-address-type=local protocol=tcp dst-port=81 \
+    action=dst-nat to-addresses=192.168.111.111 to-ports=22 \
+    comment="Hairpin :: SSH PV1 - LAN 81 -> 192.168.111.111:22"
+/ip firewall nat add chain=dstnat in-interface-list=LAN dst-address-type=local protocol=tcp dst-port=82 \
+    action=dst-nat to-addresses=192.168.111.222 to-ports=22 \
+    comment="Hairpin :: SSH PV2 - LAN 82 -> 192.168.111.222:22"
+/ip firewall nat add chain=dstnat in-interface-list=LAN dst-address-type=local protocol=tcp dst-port=8887 \
+    action=dst-nat to-addresses=10.99.99.2 to-ports=8888 \
+    comment="Hairpin :: South Switch - LAN 8887 -> 10.99.99.2:8888"
+
+# Firewall Filter Rules
+# Input Rules
+/ip firewall filter
+add chain=input connection-state=established,related action=accept \
+    comment="Input: Allow Established/Related"
+add chain=input connection-state=invalid action=drop \
+    comment="Input: Drop Invalid"
+add chain=input in-interface-list=LAN action=accept \
+    comment="Input: Allow LAN to Router"
+add chain=input in-interface-list=WAN protocol=tcp dst-port=8888 action=accept \
+    comment="Input: Allow Winbox from WAN (TCP 8888)"
+add chain=input protocol=icmp limit=10,20:packet action=accept \
+    comment="Input: Allow ICMP Limited"
+add chain=input action=drop \
+    comment="Input: Drop Everything Else"
+
+# Forward Rules
+/ip firewall filter
+add chain=forward connection-state=established,related action=accept \
+    comment="Forward: Allow Established/Related"
+add chain=forward connection-state=invalid action=drop \
+    comment="Forward: Drop Invalid"
+add chain=forward in-interface-list=LAN out-interface-list=LAN action=accept \
+    comment="Forward: Allow LAN <-> LAN"
+add chain=forward in-interface-list=LAN out-interface-list=LAN connection-nat-state=dstnat action=accept \
+    comment="Forward: Allow Hairpin (dst-nat)"
+add chain=forward in-interface-list=LAN out-interface-list=WAN action=accept \
+    comment="Forward: Allow LAN -> WAN"
+add chain=forward in-interface-list=WAN out-interface-list=LAN connection-nat-state=dstnat action=accept \
+    comment="Forward: Allow WAN -> LAN (dst-nat)"
+add chain=forward action=drop \
+    comment="Forward: Drop Everything Else"
