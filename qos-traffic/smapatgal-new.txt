@@ -57,144 +57,155 @@ add chain=forward connection-mark=lan-lan action=accept comment="Accept LAN<->LA
 
 # DNS Upload (LAN -> WAN)
 /ip firewall mangle
-add chain=forward in-interface-list=LAN out-interface-list=WAN protocol=udp dst-port=53 action=mark-packet new-packet-mark=dns-packet passthrough=yes comment="DNS up UDP"
-add chain=forward in-interface-list=LAN out-interface-list=WAN protocol=tcp dst-port=53 action=mark-packet new-packet-mark=dns-packet passthrough=yes comment="DNS up TCP"
+add chain=forward in-interface-list=LAN out-interface-list=WAN protocol=udp dst-port=53 action=mark-packet new-packet-mark=dns-down-packet passthrough=yes comment="DNS up UDP"
+add chain=forward in-interface-list=LAN out-interface-list=WAN protocol=tcp dst-port=53 action=mark-packet new-packet-mark=dns-down-packet passthrough=yes comment="DNS up TCP"
 
 # DNS Download (WAN -> LAN)
 /ip firewall mangle
-add chain=forward in-interface-list=WAN out-interface-list=LAN protocol=udp src-port=53 action=mark-packet new-packet-mark=dns-packet passthrough=yes comment="DNS down UDP"
-add chain=forward in-interface-list=WAN out-interface-list=LAN protocol=tcp src-port=53 action=mark-packet new-packet-mark=dns-packet passthrough=yes comment="DNS down TCP"
+add chain=forward in-interface-list=WAN out-interface-list=LAN protocol=udp src-port=53 action=mark-packet new-packet-mark=dns-up-packet passthrough=yes comment="DNS down UDP"
+add chain=forward in-interface-list=WAN out-interface-list=LAN protocol=tcp src-port=53 action=mark-packet new-packet-mark=dns-up-packet passthrough=yes comment="DNS down TCP"
 
 # ICMP Upload & Download (both directions)
 /ip firewall mangle
-add chain=forward in-interface-list=LAN out-interface-list=WAN protocol=icmp action=mark-packet new-packet-mark=icmp-packet passthrough=yes comment="ICMP up"
-add chain=forward in-interface-list=WAN out-interface-list=LAN protocol=icmp action=mark-packet new-packet-mark=icmp-packet passthrough=yes comment="ICMP down"
+add chain=forward in-interface-list=LAN out-interface-list=WAN protocol=icmp action=mark-packet new-packet-mark=icmp-up-packet passthrough=yes comment="ICMP up"
+add chain=forward in-interface-list=WAN out-interface-list=LAN protocol=icmp action=mark-packet new-packet-mark=icmp-down-packet passthrough=yes comment="ICMP down"
 
 
 # UPLOAD (LAN -> WAN), Connection Marking each source segment
 /ip firewall mangle
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=10.99.99.0/24 \
-    action=mark-connection new-connection-mark=mgmt-conn passthrough=yes \
+    action=mark-connection new-connection-mark=mgmt-up-conn passthrough=yes \
     comment="UPLOAD Mgmt (10.99.99.0/24) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.111.0/24 \
-    action=mark-connection new-connection-mark=server-conn passthrough=yes \
+    action=mark-connection new-connection-mark=server-up-conn passthrough=yes \
     comment="UPLOAD Server (192.168.111.0/24) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=10.1.2.0/24 \
-    action=mark-connection new-connection-mark=server-conn passthrough=yes \
+    action=mark-connection new-connection-mark=server-up-conn passthrough=yes \
     comment="UPLOAD DNS & Mikrotik CT Infra (10.1.2.0/24) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=172.16.10.0/24 \
-    action=mark-connection new-connection-mark=iot-conn passthrough=yes \
+    action=mark-connection new-connection-mark=iot-up-conn passthrough=yes \
     comment="UPLOAD IoT/CCTV (172.16.10.0/24) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.50.0/24 \
-    action=mark-connection new-connection-mark=operator-conn passthrough=yes \
+    action=mark-connection new-connection-mark=operator-up-conn passthrough=yes \
     comment="UPLOAD Operator (192.168.50.0/24) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.60.0/24 \
-    action=mark-connection new-connection-mark=tu-conn passthrough=yes \
+    action=mark-connection new-connection-mark=tu-up-conn passthrough=yes \
     comment="UPLOAD Tata Usaha (192.168.60.0/24) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.70.0/24 \
-    action=mark-connection new-connection-mark=lib-conn passthrough=yes \
+    action=mark-connection new-connection-mark=lib-up-conn passthrough=yes \
     comment="UPLOAD Perpustakaan (192.168.70.0/24) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.10.0/24 \
-    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    action=mark-connection new-connection-mark=labkom-up-conn passthrough=yes \
     comment="UPLOAD Labkom1 (192.168.10.0/24) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.20.0/24 \
-    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    action=mark-connection new-connection-mark=labkom-up-conn passthrough=yes \
     comment="UPLOAD Labkom2 (192.168.20.0/24) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.30.0/24 \
-    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    action=mark-connection new-connection-mark=labkom-up-conn passthrough=yes \
     comment="UPLOAD Labkom3 (192.168.30.0/24) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=192.168.40.0/24 \
-    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    action=mark-connection new-connection-mark=labkom-up-conn passthrough=yes \
     comment="UPLOAD Labkom4 (192.168.40.0/24) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=172.16.8.0/23 \
-    action=mark-connection new-connection-mark=ihs-conn passthrough=yes \
+    action=mark-connection new-connection-mark=ihs-up-conn passthrough=yes \
     comment="UPLOAD Internal Hotspot (172.16.8.0/23) -> Internet"
 add chain=forward in-interface-list=LAN out-interface-list=WAN src-address=172.16.0.0/21 \
-    action=mark-connection new-connection-mark=phs-conn passthrough=yes \
+    action=mark-connection new-connection-mark=phs-up-conn passthrough=yes \
     comment="UPLOAD Public Hotspot (172.16.0.0/21) -> Internet"
 
 # DOWNLOAD (WAN -> LAN), Connection Marking each destination segment
 /ip firewall mangle
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=10.99.99.0/24 \
-    action=mark-connection new-connection-mark=mgmt-conn passthrough=yes \
+    action=mark-connection new-connection-mark=mgmt-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> Mgmt (10.99.99.0/24)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.111.0/24 \
-    action=mark-connection new-connection-mark=server-conn passthrough=yes \
+    action=mark-connection new-connection-mark=server-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> Server (192.168.111.0/24)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=10.1.2.0/24 \
-    action=mark-connection new-connection-mark=server-conn passthrough=yes \
+    action=mark-connection new-connection-mark=server-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> DNS & Mikrotik Container Infra (10.1.2.0/24)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=172.16.10.0/24 \
-    action=mark-connection new-connection-mark=iot-conn passthrough=yes \
+    action=mark-connection new-connection-mark=iot-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> IoT/CCTV (172.16.10.0/24)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.50.0/24 \
-    action=mark-connection new-connection-mark=operator-conn passthrough=yes \
+    action=mark-connection new-connection-mark=operator-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> Operator (192.168.50.0/24)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.60.0/24 \
-    action=mark-connection new-connection-mark=tu-conn passthrough=yes \
+    action=mark-connection new-connection-mark=tu-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> Tata Usaha (192.168.60.0/24)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.70.0/24 \
-    action=mark-connection new-connection-mark=lib-conn passthrough=yes \
+    action=mark-connection new-connection-mark=lib-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> Perpustakaan (192.168.70.0/24)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.10.0/24 \
-    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    action=mark-connection new-connection-mark=labkom-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> Labkom1 (192.168.10.0/24)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.20.0/24 \
-    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    action=mark-connection new-connection-mark=labkom-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> Labkom2 (192.168.20.0/24)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.30.0/24 \
-    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    action=mark-connection new-connection-mark=labkom-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> Labkom3 (192.168.30.0/24)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=192.168.40.0/24 \
-    action=mark-connection new-connection-mark=labkom-conn passthrough=yes \
+    action=mark-connection new-connection-mark=labkom-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> Labkom4 (192.168.40.0/24)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=172.16.8.0/23 \
-    action=mark-connection new-connection-mark=ihs-conn passthrough=yes \
+    action=mark-connection new-connection-mark=ihs-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> Internal Hotspot (172.16.8.0/23)"
 add chain=forward in-interface-list=WAN out-interface-list=LAN dst-address=172.16.0.0/21 \
-    action=mark-connection new-connection-mark=phs-conn passthrough=yes \
+    action=mark-connection new-connection-mark=phs-down-conn passthrough=yes \
     comment="DOWNLOAD Internet -> Public Hotspot (172.16.0.0/21)"
 
 # Packet Marking from Connection Mark for Queue Tree
 /ip firewall mangle
-add chain=forward connection-mark=server-conn action=mark-packet new-packet-mark=server-packet passthrough=no comment="PACKET Server (Inc. DNS & Mikrotik CT Infra)"
-add chain=forward connection-mark=mgmt-conn action=mark-packet new-packet-mark=mgmt-packet passthrough=no comment="PACKET Management"
-add chain=forward connection-mark=iot-conn action=mark-packet new-packet-mark=iot-packet passthrough=no comment="PACKET IoT/CCTV"
-add chain=forward connection-mark=operator-conn action=mark-packet new-packet-mark=operator-packet passthrough=no comment="PACKET Operator"
-add chain=forward connection-mark=tu-conn action=mark-packet new-packet-mark=tu-packet passthrough=no comment="PACKET Tata Usaha"
-add chain=forward connection-mark=lib-conn action=mark-packet new-packet-mark=lib-packet passthrough=no comment="PACKET Perpustakaan"
-add chain=forward connection-mark=labkom-conn action=mark-packet new-packet-mark=labkom-packet passthrough=no comment="PACKET Labkom (1-4)"
-add chain=forward connection-mark=ihs-conn action=mark-packet new-packet-mark=internal-hotspot-packet passthrough=no comment="PACKET Internal Hotspot"
-add chain=forward connection-mark=phs-conn action=mark-packet new-packet-mark=public-hotspot-packet passthrough=no comment="PACKET Public Hotspot"
+add chain=forward connection-mark=server-up-conn action=mark-packet new-packet-mark=server-up-packet passthrough=no comment="UPLOAD PACKET Server (Inc. DNS & Mikrotik CT Infra)"
+add chain=forward connection-mark=mgmt-up-conn action=mark-packet new-packet-mark=mgmt-up-packet passthrough=no comment="UPLOAD PACKET Management"
+add chain=forward connection-mark=iot-up-conn action=mark-packet new-packet-mark=iot-up-packet passthrough=no comment="UPLOAD PACKET IoT/CCTV"
+add chain=forward connection-mark=operator-up-conn action=mark-packet new-packet-mark=operator-up-packet passthrough=no comment="UPLOAD PACKET Operator"
+add chain=forward connection-mark=tu-up-conn action=mark-packet new-packet-mark=tu-up-packet passthrough=no comment="UPLOAD PACKET Tata Usaha"
+add chain=forward connection-mark=lib-up-conn action=mark-packet new-packet-mark=lib-up-packet passthrough=no comment="UPLOAD PACKET Perpustakaan"
+add chain=forward connection-mark=labkom-up-conn action=mark-packet new-packet-mark=labkom-up-packet passthrough=no comment="UPLOAD PACKET Labkom (1-4)"
+add chain=forward connection-mark=ihs-up-conn action=mark-packet new-packet-mark=internal-hotspot-up-packet passthrough=no comment="UPLOAD PACKET Internal Hotspot"
+add chain=forward connection-mark=phs-up-conn action=mark-packet new-packet-mark=public-hotspot-up-packet passthrough=no comment="UPLOAD PACKET Public Hotspot"
+
+/ip firewall mangle
+add chain=forward connection-mark=server-down-conn action=mark-packet new-packet-mark=server-down-packet passthrough=no comment="DOWNLOAD PACKET Server (Inc. DNS & Mikrotik CT Infra)"
+add chain=forward connection-mark=mgmt-down-conn action=mark-packet new-packet-mark=mgmt-down-packet passthrough=no comment="DOWNLOAD PACKET Management"
+add chain=forward connection-mark=iot-down-conn action=mark-packet new-packet-mark=iot-down-packet passthrough=no comment="DOWNLOAD PACKET IoT/CCTV"
+add chain=forward connection-mark=operator-down-conn action=mark-packet new-packet-mark=operator-down-packet passthrough=no comment="DOWNLOAD PACKET Operator"
+add chain=forward connection-mark=tu-down-conn action=mark-packet new-packet-mark=tu-down-packet passthrough=no comment="DOWNLOAD PACKET Tata Usaha"
+add chain=forward connection-mark=lib-down-conn action=mark-packet new-packet-mark=lib-down-packet passthrough=no comment="DOWNLOAD PACKET Perpustakaan"
+add chain=forward connection-mark=labkom-down-conn action=mark-packet new-packet-mark=labkom-down-packet passthrough=no comment="DOWNLOAD PACKET Labkom (1-4)"
+add chain=forward connection-mark=ihs-down-conn action=mark-packet new-packet-mark=internal-hotspot-down-packet passthrough=no comment="DOWNLOAD PACKET Internal Hotspot"
+add chain=forward connection-mark=phs-down-conn action=mark-packet new-packet-mark=public-hotspot-down-packet passthrough=no comment="DOWNLOAD PACKET Public Hotspot"
 
 # Queue Tree Rules
 # Download
 /queue tree
-add name=dns-down parent=global packet-mark=dns-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="DNS prio-1 (download)"
-add name=icmp-down parent=global packet-mark=icmp-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="ICMP prio-1 (download)"
-add name=server-down parent=global packet-mark=server-packet priority=2 limit-at=60M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Server, DNS & Mikrotik CT prio-2 (download)"
-add name=mgmt-down parent=global packet-mark=mgmt-packet priority=2 limit-at=5M  max-limit=50M burst-limit=50M  burst-threshold=25M  burst-time=10s comment="Management prio-2 (limited 50M, download)"
-add name=iot-down parent=global packet-mark=iot-packet priority=3 limit-at=40M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="IoT/CCTV prio-3 (download)"
-add name=operator-down parent=global packet-mark=operator-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Operator prio-4 (download)"
-add name=tu-down parent=global packet-mark=tu-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Tata Usaha prio-4 (download)"
-add name=labkom-down parent=global packet-mark=labkom-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Labkom prio-5 (download)"
-add name=lib-down parent=global packet-mark=lib-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Perpustakaan prio-5 (download)"
-add name=ihs-down parent=global packet-mark=internal-hotspot-packet priority=7 limit-at=5M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Internal Hotspot prio-7 (download)"
-add name=phs-down parent=global packet-mark=public-hotspot-packet priority=8 limit-at=1M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Public Hotspot prio-8 (download)"
+add name=dns-down parent=global packet-mark=dns-down-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="DNS prio-1 (download)"
+add name=icmp-down parent=global packet-mark=icmp-down-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="ICMP prio-1 (download)"
+add name=server-down parent=global packet-mark=server-down-packet priority=2 limit-at=60M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Server, DNS & Mikrotik CT prio-2 (download)"
+add name=mgmt-down parent=global packet-mark=mgmt-down-packet priority=2 limit-at=5M  max-limit=50M burst-limit=50M  burst-threshold=25M  burst-time=10s comment="Management prio-2 (limited 50M, download)"
+add name=iot-down parent=global packet-mark=iot-down-packet priority=3 limit-at=40M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="IoT/CCTV prio-3 (download)"
+add name=operator-down parent=global packet-mark=operator-down-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Operator prio-4 (download)"
+add name=tu-down parent=global packet-mark=tu-down-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Tata Usaha prio-4 (download)"
+add name=labkom-down parent=global packet-mark=labkom-down-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Labkom prio-5 (download)"
+add name=lib-down parent=global packet-mark=lib-down-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Perpustakaan prio-5 (download)"
+add name=ihs-down parent=global packet-mark=internal-hotspot-down-packet priority=7 limit-at=5M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Internal Hotspot prio-7 (download)"
+add name=phs-down parent=global packet-mark=public-hotspot-down-packet priority=8 limit-at=1M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Public Hotspot prio-8 (download)"
 
 # Upload
 /queue tree
-add name=dns-up parent=global packet-mark=dns-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="DNS prio-1 (upload)"
-add name=icmp-up parent=global packet-mark=icmp-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="ICMP prio-1 (upload)"
-add name=server-up parent=global packet-mark=server-packet priority=2 limit-at=60M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Server, DNS & Mikrotik CT prio-2 (upload)"
-add name=mgmt-up parent=global packet-mark=mgmt-packet priority=2 limit-at=5M  max-limit=50M burst-limit=50M  burst-threshold=25M  burst-time=10s comment="Management prio-2 (limited 50M, upload)"
-add name=iot-up parent=global packet-mark=iot-packet priority=3 limit-at=40M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="IoT/CCTV prio-3 (upload)"
-add name=operator-up parent=global packet-mark=operator-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Operator prio-4 (upload)"
-add name=tu-up parent=global packet-mark=tu-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Tata Usaha prio-4 (upload)"
-add name=labkom-up parent=global packet-mark=labkom-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Labkom prio-5 (upload)"
-add name=lib-up parent=global packet-mark=lib-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Perpustakaan prio-5 (upload)"
-add name=ihs-up parent=global packet-mark=internal-hotspot-packet priority=7 limit-at=5M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Internal Hotspot prio-7 (upload)"
-add name=phs-up parent=global packet-mark=public-hotspot-packet priority=8 limit-at=1M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Public Hotspot prio-8 (upload)"
+add name=dns-up parent=global packet-mark=dns-up-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="DNS prio-1 (upload)"
+add name=icmp-up parent=global packet-mark=icmp-up-packet priority=1 limit-at=1M  max-limit=2M burst-limit=450M burst-threshold=320M burst-time=15s comment="ICMP prio-1 (upload)"
+add name=server-up parent=global packet-mark=server-up-packet priority=2 limit-at=60M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Server, DNS & Mikrotik CT prio-2 (upload)"
+add name=mgmt-up parent=global packet-mark=mgmt-up-packet priority=2 limit-at=5M  max-limit=50M burst-limit=50M  burst-threshold=25M  burst-time=10s comment="Management prio-2 (limited 50M, upload)"
+add name=iot-up parent=global packet-mark=iot-up-packet priority=3 limit-at=40M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="IoT/CCTV prio-3 (upload)"
+add name=operator-up parent=global packet-mark=operator-up-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Operator prio-4 (upload)"
+add name=tu-up parent=global packet-mark=tu-up-packet priority=4 limit-at=20M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Tata Usaha prio-4 (upload)"
+add name=labkom-up parent=global packet-mark=labkom-up-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Labkom prio-5 (upload)"
+add name=lib-up parent=global packet-mark=lib-up-packet priority=5 limit-at=10M max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Perpustakaan prio-5 (upload)"
+add name=ihs-up parent=global packet-mark=internal-hotspot-up-packet priority=7 limit-at=5M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Internal Hotspot prio-7 (upload)"
+add name=phs-up parent=global packet-mark=public-hotspot-up-packet priority=8 limit-at=1M  max-limit=400M burst-limit=450M burst-threshold=320M burst-time=15s comment="Public Hotspot prio-8 (upload)"
 
 
 # Address Lists Rules
